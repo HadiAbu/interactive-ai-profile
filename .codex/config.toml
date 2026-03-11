@@ -1,0 +1,58 @@
+## Codex project config (config.toml)
+## This file lives in `.codex/config.toml` at your project root.
+## For full reference, see the Codex docs: https://developers.openai.com/codex/config-reference
+
+###############################################################################
+# Core model & provider
+###############################################################################
+
+# Primary model used by Codex in this project.
+model = "gpt-5.2-codex"
+
+# Provider id (leave as "openai" unless you have a custom provider configured).
+model_provider = "openai"
+
+###############################################################################
+# Safety, approvals, and sandbox
+###############################################################################
+
+# When to ask for command approval:
+# - untrusted: only known-safe read-only commands auto-run; others prompt
+# - on-request: model decides when to ask (default)
+# - never: never prompt (risky)
+approval_policy = "untrusted"
+
+# Filesystem/network sandbox policy for tool calls:
+# - read-only
+# - workspace-write
+# - danger-full-access (no sandbox; extremely risky)
+sandbox_mode = "workspace-write"
+
+###############################################################################
+# Editor integration & web search
+###############################################################################
+
+# Make Codex open files in Cursor.
+file_opener = "cursor"
+
+# Web search mode: disabled | cached | live
+web_search = "cached"
+
+###############################################################################
+# Features and platform-specific tweaks
+###############################################################################
+
+[features]
+# Ensure correct UTF-8 behavior in PowerShell sessions on Windows.
+powershell_utf8 = true
+
+[sandbox_workspace_write]
+# No extra writable roots beyond the project by default.
+writable_roots = []
+# Disallow outbound network access from sandboxed tools by default.
+network_access = false
+
+[windows]
+# Use the default unelevated Windows sandbox.
+sandbox = "unelevated"
+

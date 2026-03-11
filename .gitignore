@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # codex related files
-.codex/
+# .codex/
 .codex-cache/
 .codex-cache-*/
 .codex-cache-*/

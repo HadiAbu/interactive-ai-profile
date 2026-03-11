@@ -1,0 +1,116 @@
+# Default Codex exec policy for this project.
+# Controls which commands can run OUTSIDE the sandbox.
+#
+# Syntax: Starlark (Python-like, side-effect free).
+# Docs: https://developers.openai.com/codex/rules/
+
+################################################################################
+# 1. Block obviously destructive commands outside the sandbox
+################################################################################
+
+prefix_rule(
+    # Block dangerous recursive deletes like `rm -rf /` outside the sandbox.
+    pattern = ["rm", ["-rf", "-fr"]],
+    decision = "forbidden",
+    justification = "Never allow recursive force-delete outside the sandbox.",
+    match = [
+        "rm -rf /",
+        "rm -rf .",
+        "rm -fr C:\\important",
+    ],
+    not_match = [
+        # Normal deletes are still subject to Codex sandbox/approval, but
+        # they are not auto-forbidden by this rule.
+        "rm file.txt",
+    ],
+)
+
+prefix_rule(
+    # Block shutdown/reboot commands entirely.
+    pattern = ["shutdown"],
+    decision = "forbidden",
+    justification = "System shutdown or reboot is not allowed from Codex.",
+    match = [
+        "shutdown /s /t 0",
+        "shutdown -r now",
+    ],
+    not_match = [],
+)
+
+################################################################################
+# 2. Allow a few safe, read-only commands outside the sandbox
+################################################################################
+
+prefix_rule(
+    # Read-only git introspection is safe to auto-allow.
+    pattern = ["git", ["status", "diff", "log"]],
+    decision = "allow",
+    justification = "Read-only git commands are allowed outside the sandbox.",
+    match = [
+        "git status",
+        "git diff",
+        "git log -5",
+    ],
+    not_match = [
+        "git add .",
+        "git push",
+    ],
+)
+
+################################################################################
+# 3. Require approval for high-impact tools outside the sandbox
+################################################################################
+
+prefix_rule(
+    # Any git operation that can change remotes or local history must prompt.
+    pattern = ["git", ["add", "commit", "push", "pull", "merge", "rebase"]],
+    decision = "prompt",
+    justification = "Git operations that change history or remotes require approval.",
+    match = [
+        "git add .",
+        "git commit -m \"message\"",
+        "git push",
+        "git pull",
+    ],
+    not_match = [
+        "git status",
+    ],
+)
+
+prefix_rule(
+    # GitHub CLI invocations should always require explicit approval.
+    pattern = ["gh"],
+    decision = "prompt",
+    justification = "GitHub operations require manual approval before running outside the sandbox.",
+    match = [
+        "gh pr view 123",
+        "gh pr create",
+    ],
+    not_match = [],
+)
+
+prefix_rule(
+    # Docker commands can affect the host; always prompt.
+    pattern = ["docker"],
+    decision = "prompt",
+    justification = "Docker commands may change the host environment; require approval.",
+    match = [
+        "docker ps",
+        "docker run ubuntu:latest",
+        "docker compose up",
+    ],
+    not_match = [],
+)
+
+
+prefix_rule(
+  pattern=["bash","-lc"],
+  decision="forbidden",
+  justification="No compound shell scripts. Run explicit commands instead."
+)
+
+prefix_rule(
+  pattern=["bash","-c"],
+  decision="forbidden",
+  justification="No compound shell scripts. Run explicit commands instead."
+)
