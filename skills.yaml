@@ -1,0 +1,39 @@
+lenses:
+  ui-systems:
+    label: UI Systems
+    emphasis:
+      - design systems
+      - frontend architecture
+      - dashboard UX
+  fullstack-delivery:
+    label: Fullstack Delivery
+    emphasis:
+      - end-to-end ownership
+      - API integration
+      - delivery execution
+  distributed-patterns:
+    label: Distributed Patterns
+    emphasis:
+      - transactions
+      - event-driven systems
+      - concurrency control
+  ai-automation:
+    label: AI Automation
+    emphasis:
+      - constrained assistants
+      - workflow automation
+      - retrieval grounding
+
+signals:
+  - slug: transactions
+    label: Transactional thinking
+    evidence_hint: Concurrency control and reliable state transitions
+  - slug: kafka-pubsub
+    label: Kafka pub/sub
+    evidence_hint: Event flow and asynchronous processing
+  - slug: auth-security
+    label: Authentication and security
+    evidence_hint: OWASP-aware access and session design
+  - slug: event-sourcing
+    label: Event sourcing
+    evidence_hint: Immutable events and replayable history

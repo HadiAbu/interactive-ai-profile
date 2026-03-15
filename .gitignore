@@ -211,3 +211,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Frontend (Node/Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+frontend/tailwind.config.js
+frontend/tailwind.config.d.ts

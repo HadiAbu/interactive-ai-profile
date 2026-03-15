@@ -1,0 +1,21 @@
+external_trust:
+  - label: Upwork profile
+    url: https://www.upwork.com/freelancers/~01bfbc696afeb116a8
+    type: profile
+
+repositories:
+  - slug: popcorn-palace
+    label: Popcorn-Palace
+    url: https://github.com/HadiAbu/Popcorn-Palace
+  - slug: kafka-stream-store
+    label: kafka-stream-store
+    url: https://github.com/HadiAbu/kafka-stream-store
+  - slug: backend-auth
+    label: backend-auth
+    url: https://github.com/HadiAbu/backend-auth
+  - slug: event-sourcing
+    label: event-sourcing
+    url: https://github.com/HadiAbu/event-sourcing
+  - slug: global-climate-lens
+    label: global-climate-lens
+    url: https://github.com/HadiAbu/global-climate-lens
