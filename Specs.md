@@ -445,6 +445,7 @@ Deliverables:
 - devcontainer setup
 - Docker access confirmed
 - toolchain verified
+- `.env.example` created and documented
 
 ---
 
@@ -458,6 +459,11 @@ Deliverables:
 - folder structure
 - `.gitignore`
 - `Makefile`
+- `README.md`
+- `.env.example`
+- `profile.yaml`
+- `skills.yaml`
+- `evidence/links.yaml`
 - backend FastAPI app
 - `/health` endpoint
 - frontend Vite React TS app
@@ -476,6 +482,7 @@ Deliverables:
 - `docker-compose.yml`
 - Postgres service
 - backend DB configuration
+- backend CORS configuration for local frontend origin
 - `/health/db`
 - Alembic initialized
 - baseline migration works
@@ -490,6 +497,7 @@ Goal:
 
 Deliverables:
 - markdown/yaml schema
+- initial curated content files authored
 - ingestion script
 - Postgres tables
 - `GET /projects`
@@ -563,6 +571,7 @@ Tasks:
 - ensure Docker works inside devcontainer
 - ensure Node, npm, Python, pip are available
 - verify Docker Compose
+- create `.env.example` with required variables and placeholders
 - document environment assumptions
 
 Verification:
@@ -572,6 +581,7 @@ Verification:
 - `npm -v`
 - `python -V`
 - `pip -V`
+- required environment variables are documented in one place
 
 Why this step matters:
 Without reliable environment setup, all later steps become unstable and noisy.
@@ -590,6 +600,7 @@ Tasks:
   - `.gitignore`
   - `Makefile`
   - `README.md`
+  - `.env.example`
   - `profile.yaml`
   - `skills.yaml`
   - `evidence/links.yaml`
@@ -597,6 +608,7 @@ Tasks:
 Verification:
 - repository tree is clean
 - files exist in expected locations
+- root files contain minimal starter structure, not empty placeholders
 
 Why this step matters:
 A stable structure prevents rework and keeps content/model/API boundaries clear.
@@ -657,11 +669,13 @@ Tasks:
 - install SQLAlchemy and psycopg
 - create DB config module
 - add DB connectivity check
+- add backend settings loading from environment variables
 - implement `/health/db`
 
 Verification:
 - `/health/db` returns DB OK
 - backend can connect to Postgres
+- backend fails clearly when required DB env vars are missing or invalid
 
 Why this step matters:
 This is the first proof that app logic can reach persistent infrastructure.
@@ -690,10 +704,12 @@ Tasks:
 - decide markdown frontmatter structure
 - define YAML fields for projects, profile, skills, evidence
 - define DB tables for content and chunks
+- author at least 2 sample project files plus base profile/skills/evidence files
 
 Verification:
 - schema is explicit and documented
 - sample content validates against expectations
+- sample content is sufficient to drive the first ingestion run
 
 Why this step matters:
 The entire AI and content experience depends on a clean evidence model.
@@ -723,10 +739,13 @@ Tasks:
 - implement `GET /projects/{id}`
 - shape output for frontend consumption
 - support flagship designation and tags
+- define response schemas explicitly in backend models
+- enable local CORS for frontend development
 
 Verification:
 - endpoints return structured data
 - project detail retrieval works
+- frontend can call the API locally without cross-origin issues
 
 Why this step matters:
 This forms the contract between content system and UI.
@@ -740,11 +759,13 @@ Tasks:
 - define dashboard shell
 - add lens selector
 - create placeholder routing
+- decide local runtime mode: host-run frontend first, then optional Dockerized frontend later
 
 Verification:
 - frontend runs
 - shell renders
 - navigation works
+- frontend can reach configured backend base URL in local development
 
 Why this step matters:
 The UI foundation should exist before integrating real API data.
@@ -765,6 +786,21 @@ Verification:
 
 Why this step matters:
 This is the first real recruiter-facing version of the site.
+
+---
+
+## Step 12.5 — Add frontend runtime integration
+Tasks:
+- decide whether frontend stays host-run or is added to Docker Compose for daily development
+- if added to Compose, define frontend service and port mapping
+- ensure browser-facing API base URL works in that runtime mode
+
+Verification:
+- frontend starts in the chosen runtime mode
+- browser requests reach backend successfully
+
+Why this step matters:
+The project should have one clear local run path rather than switching ad hoc between host and container assumptions.
 
 ---
 
@@ -972,20 +1008,22 @@ The fit tool and AI assistant must surface strengths and reasonable gaps honestl
 The practical starting order should be:
 
 1. Fix and finalize devcontainer + Docker access
-2. Create backend Dockerfile
+2. Create `.env.example` and document required variables
 3. Create repo skeleton
 4. Create minimal FastAPI backend
-5. Add docker-compose with Postgres
-6. Add DB health layer
-7. Add Alembic
-8. Define content schema
-9. Build ingestion
-10. Add project APIs
-11. Start frontend shell
-12. Integrate frontend with backend
-13. Add grounded AI
-14. Add fit assessment
-15. Polish lens behavior and recruiter-mode UX
+5. Create backend Dockerfile
+6. Add docker-compose with Postgres
+7. Add DB health layer
+8. Add Alembic
+9. Define content schema and author initial content files
+10. Build ingestion
+11. Add project APIs
+12. Start frontend shell
+13. Integrate frontend with backend
+14. Decide and lock frontend runtime mode
+15. Add grounded AI
+16. Add fit assessment
+17. Polish lens behavior and recruiter-mode UX
 
 ---
 
