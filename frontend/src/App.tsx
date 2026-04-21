@@ -1,20 +1,21 @@
-const lenses = [
-  "UI Systems",
-  "Fullstack Delivery",
-  "Distributed Patterns",
-  "AI Automation",
-];
+import { useEffect, useState } from "react";
+import { Chat } from "./components/Chat";
 
-const flagshipProjects = [
-  {
-    title: "Popcorn Palace",
-    signal: "Transactional thinking and concurrency-aware booking flows.",
-  },
-  {
-    title: "kafka-stream-store",
-    signal: "FastAPI, Postgres, Kafka, and migration discipline in one stack.",
-  },
-];
+const API = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+
+interface Project {
+  slug: string;
+  title: string;
+  summary: string | null;
+  primary_lens: string | null;
+  signals: string[];
+}
+
+interface Lens {
+  slug: string;
+  label: string;
+  display_order: number;
+}
 
 const proofPoints = [
   "Flagship-first recruiter flow",
@@ -23,6 +24,31 @@ const proofPoints = [
 ];
 
 function App() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [lenses, setLenses] = useState<Lens[]>([]);
+  const [selectedLens, setSelectedLens] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API}/projects`).then((r) => r.json()),
+      fetch(`${API}/lenses`).then((r) => r.json()),
+    ]).then(([projectData, lensData]: [Project[], Lens[]]) => {
+      setProjects(projectData);
+      setLenses(lensData);
+      setLoading(false);
+    });
+  }, []);
+
+  const visibleProjects =
+    selectedLens === "all"
+      ? projects
+      : projects.filter((p) => p.primary_lens === selectedLens);
+
+  const allSignals = Array.from(
+    new Set(visibleProjects.flatMap((p) => p.signals)),
+  );
+
   return (
     <div className="min-h-screen bg-sand text-ink">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8 sm:px-10">
@@ -36,8 +62,8 @@ function App() {
                 Frontend-first systems builder with evidence you can inspect.
               </h1>
               <p className="max-w-2xl text-base leading-7 text-slate">
-                This shell is the Phase 1 frontend scaffold. It establishes the
-                recruiter-first dashboard structure before API integration.
+                Hadi Abu Hamed — one coherent engineering profile. Use the
+                Capability Lens to shift emphasis.
               </p>
             </div>
             <div className="flex w-full max-w-xs flex-col gap-3">
@@ -47,11 +73,13 @@ function App() {
               <select
                 id="lens"
                 className="rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm text-ink outline-none ring-0"
-                defaultValue={lenses[0]}
+                value={selectedLens}
+                onChange={(e) => setSelectedLens(e.target.value)}
               >
+                <option value="all">All</option>
                 {lenses.map((lens) => (
-                  <option key={lens} value={lens}>
-                    {lens}
+                  <option key={lens.slug} value={lens.slug}>
+                    {lens.label}
                   </option>
                 ))}
               </select>
@@ -73,28 +101,54 @@ function App() {
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-ember">
-                  First Major Block
+                  Case Studies
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold">Flagship case studies</h2>
+                <h2 className="mt-2 text-2xl font-semibold">Flagship work</h2>
               </div>
-              <span className="rounded-full border border-ink/10 bg-white px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate">
-                API wiring next
-              </span>
+              {selectedLens !== "all" && (
+                <span className="rounded-full border border-ink/10 bg-white px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate">
+                  {lenses.find((l) => l.slug === selectedLens)?.label}
+                </span>
+              )}
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              {flagshipProjects.map((project) => (
-                <article
-                  key={project.title}
-                  className="rounded-[24px] bg-white p-6 shadow-panel"
-                >
-                  <p className="text-sm uppercase tracking-[0.18em] text-moss">
-                    Flagship
-                  </p>
-                  <h3 className="mt-3 text-xl font-semibold">{project.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate">{project.signal}</p>
-                </article>
-              ))}
-            </div>
+            {loading ? (
+              <p className="text-sm text-slate">Loading...</p>
+            ) : visibleProjects.length === 0 ? (
+              <p className="text-sm text-slate">No projects for this lens.</p>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {visibleProjects.map((project) => (
+                  <article
+                    key={project.slug}
+                    className="rounded-[24px] bg-white p-6 shadow-panel"
+                  >
+                    <p className="text-sm uppercase tracking-[0.18em] text-moss">
+                      Flagship
+                    </p>
+                    <h3 className="mt-3 text-xl font-semibold">
+                      {project.title}
+                    </h3>
+                    {project.summary && (
+                      <p className="mt-3 text-sm leading-6 text-slate">
+                        {project.summary.split("\n")[0]}
+                      </p>
+                    )}
+                    {project.signals.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {project.signals.map((s) => (
+                          <span
+                            key={s}
+                            className="rounded-full bg-sand px-3 py-1 text-xs text-ink"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           <section className="grid gap-4 lg:grid-cols-3">
@@ -111,39 +165,40 @@ function App() {
           <section className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
             <div className="rounded-[32px] border border-ink/10 bg-white p-8 shadow-panel">
               <p className="text-sm uppercase tracking-[0.18em] text-ember">
-                Skill Evidence Matrix
+                Signal Evidence
               </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                {[
-                  "Transactions",
-                  "Pessimistic locking",
-                  "Kafka pub/sub",
-                  "Authentication/security",
-                  "Event sourcing",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl bg-sand px-4 py-4 text-sm text-ink"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+              {allSignals.length === 0 ? (
+                <p className="mt-5 text-sm text-slate">
+                  No signals for this lens.
+                </p>
+              ) : (
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {allSignals.map((signal) => (
+                    <div
+                      key={signal}
+                      className="rounded-2xl bg-sand px-4 py-4 text-sm text-ink"
+                    >
+                      {signal}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="rounded-[32px] border border-ink/10 bg-ink p-8 text-white shadow-panel">
               <p className="text-sm uppercase tracking-[0.18em] text-white/70">
-                Scaffold Notes
+                Capability Lenses
               </p>
-              <ul className="mt-5 space-y-3 text-sm leading-6 text-white/88">
-                <li>Frontend uses Vite + React + TypeScript + Tailwind.</li>
-                <li>Project cards are placeholder data until the project API exists.</li>
-                <li>Next UI step is wiring the dashboard to backend content endpoints.</li>
+              <ul className="mt-5 space-y-3 text-sm leading-6 text-white/80">
+                {lenses.map((lens) => (
+                  <li key={lens.slug}>{lens.label}</li>
+                ))}
               </ul>
             </div>
           </section>
         </main>
       </div>
+      <Chat />
     </div>
   );
 }
