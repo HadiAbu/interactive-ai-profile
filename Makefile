@@ -1,7 +1,7 @@
 BACKEND_DIR=backend
 FRONTEND_DIR=frontend
 
-.PHONY: backend-dev frontend-dev install-frontend docker-up docker-down health
+.PHONY: backend-dev frontend-dev install-frontend docker-up docker-down health migrate migration
 
 backend-dev:
 	uvicorn app.main:app --app-dir $(BACKEND_DIR) --reload --host 0.0.0.0 --port 8000
@@ -20,3 +20,9 @@ docker-down:
 
 health:
 	curl http://localhost:8000/health
+
+migrate:
+	cd $(BACKEND_DIR) && alembic upgrade head
+
+migration:
+	cd $(BACKEND_DIR) && alembic revision --autogenerate -m "$(m)"

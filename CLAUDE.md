@@ -26,21 +26,23 @@ A recruiter-facing **candidate evaluation console** for Hadi Abu Hamed. Not a bl
 
 ```bash
 # Backend (hot-reload on :8000)
-make backend-dev
+uvicorn app.main:app --app-dir backend --reload --host 0.0.0.0 --port 8000
 
-# Frontend (hot-reload on :5173)
-make frontend-dev
-
-# Install frontend deps
-make install-frontend
+# Frontend (install deps first time, then dev server on :5173)
+cd frontend && npm install
+cd frontend && npm run dev
 
 # Docker (Postgres + Backend)
-make docker-up
-make docker-down
+docker compose up -d --build
+docker compose down
 
 # Health check
-make health                  # curl /health
+curl http://localhost:8000/health
 curl http://localhost:8000/health/db
+
+# Database migrations
+cd backend && alembic upgrade head
+cd backend && alembic revision --autogenerate -m "description"
 ```
 
 Frontend runs at `http://localhost:5173`, backend at `http://localhost:8000`.

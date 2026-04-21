@@ -1,9 +1,20 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.db import check_db_connection
+from app.settings import get_settings
 
 app = FastAPI()
+
+_settings = get_settings()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[_settings.frontend_origin],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
